@@ -1,66 +1,30 @@
-//
-//  ContentView.swift
-//  VibeCheck
-//
-//  Created by Kellen O'Connor on 3/21/26.
-//
-
 import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+    @State private var mosaicViewModel = MosaicViewModel()
 
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
+        if hasCompletedOnboarding {
+            TabView {
+                MosaicView(viewModel: mosaicViewModel)
+                    .tabItem {
+                        Label("Mosaic", systemImage: "square.grid.3x3.fill")
                     }
-                }
-                .onDelete(perform: deleteItems)
-            }
-#if os(macOS)
-            .navigationSplitViewColumnWidth(min: 180, ideal: 200)
-#endif
-            .toolbar {
-#if os(iOS)
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-#endif
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
+
+                SettingsView(mosaicViewModel: mosaicViewModel)
+                    .tabItem {
+                        Label("Settings", systemImage: "gearshape.fill")
                     }
-                }
             }
-        } detail: {
-            Text("Select an item")
-        }
-    }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
-        }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
-            }
+        } else {
+            OnboardingView()
         }
     }
 }
 
 #Preview {
     ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
+        .modelContainer(for: MoodEntry.self, inMemory: true)
 }

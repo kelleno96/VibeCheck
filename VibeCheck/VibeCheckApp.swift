@@ -1,10 +1,3 @@
-//
-//  VibeCheckApp.swift
-//  VibeCheck
-//
-//  Created by Kellen O'Connor on 3/21/26.
-//
-
 import SwiftUI
 import SwiftData
 
@@ -12,7 +5,7 @@ import SwiftData
 struct VibeCheckApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            MoodEntry.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
