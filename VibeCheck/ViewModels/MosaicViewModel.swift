@@ -5,8 +5,12 @@ import SwiftData
 @Observable
 final class MosaicViewModel {
     var showingColorPicker = false
+    var showingSettings = false
 
-    let columnCount = 7
+    var columnCount: Int = 7
+
+    static let minColumns = 2
+    static let maxColumns = 14
 
     /// Dev-only: number of fake preview colors to display.
     /// When > 0, these replace the real entries in the mosaic display.
@@ -16,10 +20,5 @@ final class MosaicViewModel {
     func regenerateDevPreview(count: Int) {
         devPreviewCount = count
         devPreviewColors = (0..<count).map { _ in Int.random(in: 0...4) }
-    }
-
-    /// Total number of entries logged (for display).
-    func entryCount(from entries: [MoodEntry]) -> Int {
-        entries.count
     }
 }
