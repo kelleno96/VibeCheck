@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import WidgetKit
 
 struct ColorPickerSheet: View {
     @Environment(\.modelContext) private var modelContext
@@ -68,6 +69,7 @@ struct ColorPickerSheet: View {
             let entry = MoodEntry(date: Date(), colorIndex: index)
             modelContext.insert(entry)
         }
+        WidgetCenter.shared.reloadAllTimelines()
         dismiss()
     }
 }

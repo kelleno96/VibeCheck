@@ -1,4 +1,5 @@
 import SwiftUI
+import WidgetKit
 
 struct SettingsView: View {
     @AppStorage("selectedThemeIndex") private var selectedThemeIndex = 0
@@ -49,6 +50,13 @@ struct SettingsView: View {
                         Slider(value: $devSliderValue, in: 0...1500, step: 1)
                             .onChange(of: devSliderValue) { _, newValue in
                                 mosaicViewModel.regenerateDevPreview(count: Int(newValue))
+                                let shared = UserDefaults(suiteName: appGroupID)
+                                if Int(newValue) > 0 {
+                                    shared?.set(mosaicViewModel.devPreviewColors, forKey: "devPreviewColors")
+                                } else {
+                                    shared?.removeObject(forKey: "devPreviewColors")
+                                }
+                                WidgetCenter.shared.reloadAllTimelines()
                             }
 
                         Text("Generates random colors from the active theme. Does not affect saved data.")
@@ -62,6 +70,8 @@ struct SettingsView: View {
                             devSliderValue = 0
                             mosaicViewModel.devPreviewCount = 0
                             mosaicViewModel.devPreviewColors = []
+                            UserDefaults(suiteName: appGroupID)?.removeObject(forKey: "devPreviewColors")
+                            WidgetCenter.shared.reloadAllTimelines()
                         }
                         .foregroundStyle(.red)
                     }
@@ -98,6 +108,8 @@ struct SettingsView: View {
         .onTapGesture {
             withAnimation {
                 selectedThemeIndex = theme.id
+                UserDefaults(suiteName: appGroupID)?.set(theme.id, forKey: "selectedThemeIndex")
+                WidgetCenter.shared.reloadAllTimelines()
             }
         }
     }

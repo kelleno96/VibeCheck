@@ -1,13 +1,22 @@
 import SwiftUI
 import SwiftData
 
+let appGroupID = "group.com.oconnorkellen.vibecheck"
+
 @main
 struct VibeCheckApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema(versionedSchema: MoodEntrySchemaV1.self)
+
+        guard let storeURL = FileManager.default
+            .containerURL(forSecurityApplicationGroupIdentifier: appGroupID)?
+            .appendingPathComponent("VibeCheck.store") else {
+            fatalError("Could not find App Group container")
+        }
+
         let modelConfiguration = ModelConfiguration(
             schema: schema,
-            isStoredInMemoryOnly: false
+            url: storeURL
         )
 
         do {
@@ -17,12 +26,8 @@ struct VibeCheckApp: App {
                 configurations: [modelConfiguration]
             )
         } catch {
-            // If the store is corrupted, delete it and start fresh as a last resort.
-            // This should only happen during development.
             print("Failed to create ModelContainer: \(error). Attempting to recover...")
-            let storeURL = modelConfiguration.url
             try? FileManager.default.removeItem(at: storeURL)
-            // Also remove journal files
             let storeDir = storeURL.deletingLastPathComponent()
             try? FileManager.default.removeItem(at: storeDir.appendingPathComponent(storeURL.lastPathComponent + "-wal"))
             try? FileManager.default.removeItem(at: storeDir.appendingPathComponent(storeURL.lastPathComponent + "-shm"))
@@ -38,6 +43,12 @@ struct VibeCheckApp: App {
             }
         }
     }()
+
+    init() {
+        // Sync theme index to shared UserDefaults for widget
+        let themeIndex = UserDefaults.standard.integer(forKey: "selectedThemeIndex")
+        UserDefaults(suiteName: appGroupID)?.set(themeIndex, forKey: "selectedThemeIndex")
+    }
 
     var body: some Scene {
         WindowGroup {
