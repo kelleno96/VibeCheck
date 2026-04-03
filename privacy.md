@@ -23,4 +23,4 @@ VibeCheck does not connect to the internet. All data is stored on-device only.
 
 ## Contact
 
-If you have questions about this policy, you can reach me at [kellen@oconnorkellen.com](mailto:kellen@oconnorkellen.com).
+If you have questions about this policy, you can reach me at [kodevsupport@icloud.com](kodevsupport@icloud.com).
